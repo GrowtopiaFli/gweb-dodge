@@ -186,7 +186,7 @@ class TestState extends TempoState
 					default:
 						openfl.system.System.exit(0);
 				}
-				if (FlxG.keys.anyJustPressed(ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, ZERO))
+				if (FlxG.keys.anyJustPressed([ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, ZERO]))
 				{
 					var justPressed:Int = FlxG.keys.firstJustPressed();
 					if (justPressed >= 48 && justPressed <= 57)
