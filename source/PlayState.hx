@@ -87,7 +87,12 @@ class PlayState extends TempoState
 	
 	public var blockVel:Float = 22;
 	
-	public var enemyMaxTime:Float = 3;
+	public var enemyMaxTime:Float = 5;
+	public var enemySpeed:Float = 1;
+	
+	/*	public var spectator:Bool = true;
+		public var spectatorPause:Bool = false;
+		public var prevTime:Float = 0; */
 	
 	// flixel-demos FlxBloom
 	/*	public var _bloom:Int = 10;
@@ -104,9 +109,10 @@ class PlayState extends TempoState
 		lines = new FlxSpriteGroup();
 		add(lines);
 		
-		for (i in 1...4)
+		for (i in 0...5)
 		{
-			var spr:FlxSprite = new FlxSprite(((i / 4) * FlxG.width) - 2, 0).makeGraphic(4, Std.int(FlxG.height));
+			var spr:FlxSprite = new FlxSprite((i / 4) * FlxG.width, 0).makeGraphic(4, Std.int(FlxG.height));
+			spr.x -= spr.width / 2;
 			lines.add(spr);
 		}
 		
@@ -266,7 +272,7 @@ class PlayState extends TempoState
 			_fx.draw();
 		} */
 	
-	public function songDone()
+	public function songDone():Void
 	{
 		/* if (FlxG.sound.music != null)
 				FlxG.sound.music.stop(); */
@@ -428,7 +434,7 @@ class PlayState extends TempoState
 
 			enemies.forEachAlive(function(enemy:Enemy)
 			{
-				var movementVelocity:Float = velFromFps(1.5);
+				var movementVelocity:Float = velFromFps(enemySpeed);
 				if (enemy.x < player.x) enemy.x += movementVelocity;
 				if (enemy.x > player.x) enemy.x -= movementVelocity;
 				if (enemy.y < player.y) enemy.y += movementVelocity;
@@ -443,7 +449,7 @@ class PlayState extends TempoState
 				if (enemy.dead)
 				{
 					spawnParticle(enemy.x, enemy.y, 0);
-					Sfx.enemy_die();
+					Sfx.hurt2();
 					enemy.kill();
 					enemies.remove(enemy, true);
 					enemy.destroy();	
@@ -516,7 +522,7 @@ class PlayState extends TempoState
 					bullet.y -= playerBulletVel;
 			});
 			
-			txt.text = "Beats: " + beats + "\nSteps: " + steps + "\nSong Time: " + songTime + "\n";
+			txt.text = "Beats: " + beats + "\nSteps: " + steps + "\nSong Time: " + Math.floor(songTime) + "\n";
 			
 			if (FlxG.sound.music != null && FlxG.sound.music.playing)
 			{
@@ -606,7 +612,7 @@ class PlayState extends TempoState
 								case "restart":
 									Switch.switchState(new PlayState(songId));
 								case "go to menu":
-									Switch.switchState(new Menu());
+									Switch.switchState(new MenuSelection());
 							}
 						}
 					}
@@ -629,6 +635,44 @@ class PlayState extends TempoState
 				FlxG.sound.music.resume();
 			if (FlxG.keys.justPressed.ENTER) paused = true;
 		}
+		
+		/*	if (spectator)
+			{
+				immune = false;
+				health = 3;
+				player.visible = false;
+				if (FlxG.sound.music != null)
+				{
+					var justPressedQ = FlxG.keys.justPressed.Q;
+					var justPressedE = FlxG.keys.justPressed.E;
+					var justPressedA = FlxG.keys.justPressed.A;
+					var justPressedD = FlxG.keys.justPressed.D;
+					
+					var threshold:Float = 0.1;
+					
+					if (FlxG.keys.justPressed.P) spectatorPause = !spectatorPause;
+					
+					if (spectatorPause)
+						FlxG.sound.music.pause();
+					else if (!paused)
+						FlxG.sound.music.resume();
+					
+					var prevSteps:Int = Reflect.getProperty(this, "steps");
+
+					if (justPressedQ) steps -= 1;
+					if (justPressedE) steps += 1;
+					if (justPressedA) steps -= 4;
+					if (justPressedD) steps += 4;
+
+					if ((justPressedQ || justPressedE || justPressedA || justPressedD) || steps != prevSteps)
+					{
+						trace("steps: " + steps);
+						prevTime = Math.floor((steps / ((Tempo.bpm * 4) / 60)) * 1000);
+						FlxG.sound.music.time = prevTime;
+						songTime = FlxG.sound.music.time;
+					}
+				}
+			} */
 	}
 	
 	public function velFromFps(vel:Float):Float
@@ -664,7 +708,7 @@ class PlayState extends TempoState
 			var daEnemy:Enemy = new Enemy();
 			daEnemy.x = (((FlxG.width / 4) * (id - 5)) + (((FlxG.width / 4) - daEnemy.width) / 2));
 			enemies.add(daEnemy);
-			Sfx.enemy_spawn();
+			Sfx.hurt1();
 		}
 	}
 	
@@ -694,6 +738,7 @@ class PlayState extends TempoState
 	
 	public function damagePlayer()
 	{
+		// if (spectator) return;
 		if (health > 0 && !immune)
 		{
 			switch (health)
@@ -714,6 +759,7 @@ class PlayState extends TempoState
 	
 	public function playerShoot()
 	{
+		// if (spectator) return;
 		var daBullet:Bullet = new Bullet(player.getMidpoint().x, player.getMidpoint().y, bulletSize, bulletSize, 0xFF009AFF);
 		playerBullets.add(daBullet);
 	}

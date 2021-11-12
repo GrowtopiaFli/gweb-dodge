@@ -26,7 +26,7 @@ class TempoState extends FlxState
 		FlxG.mouse.visible = false;
 		#end
 		
-		var daThing:Float = (songTime / 1000 / 60);
+		var daThing:Float = songTime / 1000 / 60;
 		beats = Math.floor(Tempo.bpm * daThing);
 		steps = Math.floor((Tempo.bpm * 4) * daThing);
 		

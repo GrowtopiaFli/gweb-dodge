@@ -100,6 +100,11 @@ class MenuSelection extends TempoState
 						completedIndicator.text = SaveManager.isLoaded(item.itemName) ? "COMPLETED" : "NOT COMPLETED";
 						completedIndicator.screenCenter(X);
 						item.alpha = FlxMath.lerp(selectedAlpha, item.alpha, alphaVel);
+						if (FlxG.keys.justPressed.T)
+						{
+							Sfx.select();
+							Switch.switchState(new TestState(Data.songData[item.itemName]));
+						}
 						if (FlxG.keys.justPressed.ENTER)
 						{
 							Sfx.select();

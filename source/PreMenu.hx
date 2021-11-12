@@ -8,7 +8,7 @@ class PreMenu extends TempoState
 	{
 		FlxG.sound.volume = 1;
 		FlxG.sound.muted = false;
-		FlxG.sound.muteKeys = [F1, ZERO];
+		FlxG.sound.muteKeys = [F1];
 		FlxG.sound.volumeUpKeys = [F3, PLUS];
 		FlxG.sound.volumeDownKeys = [F2, MINUS];
 		super.create();
