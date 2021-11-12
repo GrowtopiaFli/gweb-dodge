@@ -199,7 +199,18 @@ class TestState extends TempoState
 				if (FlxG.keys.justPressed.BACKSPACE)
 					if (field.text.length > 0)
 						field.text = field.text.substring(0, field.text.length - 1);
-				if (FlxG.keys.justPressed.ENTER)
+				if (FlxG.keys.justPressed.R)
+					switch (selected)
+					{
+						case 0:
+							if (beatsUsed.contains(beats) && beatEvents[beats].length > 0) beatEvents[beats].pop();
+						case 1:
+							if (stepsUsed.contains(steps) && stepEvents[steps].length > 0) stepEvents[steps].pop();
+						default:
+							openfl.system.System.exit(0);
+					}
+				if (FlxG.keys.justPressed.ENTER && field.text.length > 0)
+				{
 					switch (selected)
 					{
 						case 0:
@@ -213,7 +224,9 @@ class TestState extends TempoState
 						default:
 							openfl.system.System.exit(0);
 					}
-				if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.C) isSelected = false;
+					field.text = "";
+				}
+				if (FlxG.keys.justPressed.B) isSelected = false;
 			}
 		}
 		
