@@ -1,0 +1,7 @@
+Explode_1 = 0 0 65 65
+Explode_2 = 65 0 65 65
+Explode_3 = 130 0 65 65
+Explode_4 = 0 65 65 65
+Explode_5 = 65 65 65 65
+Explode_6 = 0 130 65 65
+Explode_7 = 65 130 65 65
