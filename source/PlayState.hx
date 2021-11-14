@@ -407,6 +407,8 @@ class PlayState extends TempoState
 					}
 				}); */
 			});
+			
+			var daVel:Float = (blockVel * FlxG.updateFramerate);
 
 			blocks.forEachAlive(function(block:Block)
 			{
@@ -447,7 +449,7 @@ class PlayState extends TempoState
 					block.destroy();
 				}
 				else
-					block.velocity.y = blockVel * FlxG.updateFramerate;
+					block.velocity.y = daVel;
 			});
 
 			enemies.forEachAlive(function(enemy:Enemy)
