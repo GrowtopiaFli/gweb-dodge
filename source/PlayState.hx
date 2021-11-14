@@ -376,7 +376,7 @@ class PlayState extends TempoState
 					block.destroy();
 				}
 				else
-					block.vel = 0;
+					block.velocity.y = 0;
 				block.alpha -= velFromFps(0.08);
 			});
 
@@ -447,7 +447,7 @@ class PlayState extends TempoState
 					block.destroy();
 				}
 				else
-					block.paused = false;
+					block.velocity.y = blockVel * FlxG.updateFramerate;
 			});
 
 			enemies.forEachAlive(function(enemy:Enemy)
@@ -623,7 +623,7 @@ class PlayState extends TempoState
 
 			blocks.forEachAlive(function(block:Block)
 			{
-				block.paused = true;
+				block.velocity.y = 0;
 			});
 			
 			if (FlxG.sound.music != null)
@@ -737,8 +737,6 @@ class PlayState extends TempoState
 			}
 			daBlock.pos = id - 1;
 			daBlock.alpha = 0;
-			daBlock.vel = velFromFps(blockVel);
-			daBlock.paused = true;
 			queuedBlocks.add(daBlock);
 		}
 		else if (id >= 5 && id <= 8)
