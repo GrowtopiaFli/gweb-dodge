@@ -29,7 +29,7 @@ using StringTools;
 
 class PlayState extends TempoState
 {
-	public var txt:FlxText;
+	// public var txt:FlxText;
 	public var pause:FlxText;
 	public var lines:FlxSpriteGroup;
 	public var fadingBlocks:FlxTypedSpriteGroup<Block>;
@@ -159,8 +159,8 @@ class PlayState extends TempoState
 		playerDeath.visible = false;
 		add(playerDeath);
 		
-		txt = new FlxText(0, 0, 0, "Beats: \nSteps: \nSong Time: \n", 16, true);
-		add(txt);
+		/*	txt = new FlxText(0, 0, 0, "Beats: \nSteps: \nSong Time: \n", 16, true);
+			add(txt);*/
 		
 		pauseBG = new FlxSprite().makeGraphic(Std.int(FlxG.width), Std.int(FlxG.height), FlxColor.BLACK);
 		pauseBG.alpha = 0.75;
@@ -566,7 +566,7 @@ class PlayState extends TempoState
 					bullet.y -= playerBulletVel;
 			});
 			
-			txt.text = "Beats: " + beats + "\nSteps: " + steps + "\nSong Time: " + Math.floor(songTime) + "\n";
+			// txt.text = "Beats: " + beats + "\nSteps: " + steps + "\nSong Time: " + Math.floor(songTime) + "\n";
 			
 			if (FlxG.sound.music != null && FlxG.sound.music.playing)
 			{
