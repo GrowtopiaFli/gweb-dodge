@@ -5,11 +5,14 @@ import flixel.text.FlxText;
 
 class About extends TempoState
 {
+	public function new(play:Bool = false)
+	{
+		super();
+		if (play) Menu.menuAudio.play(true);
+	}
+
 	override public function create()
 	{
-		if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
-			Menu.playMenuMusic();
-	
 		var txt:FlxText = new FlxText(0, 0, 0,
 		"There is no story to this game.\n" +
 		"it's just full of my funi music.\n" +
@@ -40,6 +43,9 @@ class About extends TempoState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		
+		if (!Menu.menuAudio.playing)
+			Menu.playMenuMusic();
 		
 		if (FlxG.keys.justPressed.BACKSPACE || FlxG.keys.justPressed.ESCAPE)
 		{

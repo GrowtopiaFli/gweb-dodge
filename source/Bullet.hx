@@ -8,6 +8,8 @@ class Bullet extends FlxSprite
 {
 	public var funiAngle:Float = 0;
 	public var vel:FlxPoint = FlxPoint.get(0, 0);
+	public var pos:Int = 0;
+	public var cantKill:Bool = false;
 
 	public function new(daX:Float = 0, daY:Float = 0, w:Int = 1, h:Int = 1, col:FlxColor = FlxColor.WHITE)
 	{

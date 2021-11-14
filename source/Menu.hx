@@ -1,11 +1,15 @@
 package;
 
+import assets.*;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.text.FlxText;
 import flixel.math.FlxMath;
+
+import flixel.system.FlxSound;
 
 class Menu extends TempoState
 {
@@ -14,13 +18,18 @@ class Menu extends TempoState
 	public var selectedAlpha:Float = 1;
 
 	public var menuItems:FlxTypedSpriteGroup<TextItem>;
-	public var itemList:Array<String> = ["Play", "About", "Exit"];
+	public var itemList:Array<String> = ["Play", "About", "Instructions", "Exit"];
+	
+	public static var menuAudio:FlxSound;
+	
+	public function new(play:Bool = false)
+	{
+		super();
+		if (play) menuAudio.play(true);
+	}
 
 	override public function create()
 	{
-		if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
-			playMenuMusic();
-		
 		var daFont:String = "fonts/archivoblack.ttf";
 		
 		var title:FlxText = new FlxText(0, 20, 0, "GWeb Dodge", 40, true);
@@ -32,7 +41,7 @@ class Menu extends TempoState
 		add(menuItems);
 
 		var daSize:Int = 40;
-		var daAdd:Int = 160;
+		var daAdd:Int = 140;
 
 		for (i in 0...itemList.length)
 			switch (i)
@@ -52,8 +61,18 @@ class Menu extends TempoState
 					daText.itemName = daText.text;
 					daText.alpha = unselectedAlpha;
 					daText.screenCenter();
+					daText.y -= daSize + 10;
 					menuItems.add(daText);
 				case 2:
+					var daText:TextItem = new TextItem(0, 0, 0, itemList[i], daSize, true);
+					daText.alignment = CENTER;
+					daText.font = daFont;
+					daText.itemName = daText.text;
+					daText.alpha = unselectedAlpha;
+					daText.screenCenter();
+					daText.y += daSize + 10;
+					menuItems.add(daText);
+				case 3:
 					var daText:TextItem = new TextItem(0, 0, 0, itemList[i], daSize, true);
 					daText.alignment = CENTER;
 					daText.font = daFont;
@@ -65,11 +84,16 @@ class Menu extends TempoState
 			}
 	
 		super.create();
+		
+		if (menuAudio.volume <= 0) menuAudio.volume = 1;
 	}
 	
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (!menuAudio.playing)
+			playMenuMusic();
 		
 		if (itemList.length > 0)
 		{
@@ -104,6 +128,8 @@ class Menu extends TempoState
 								Switch.switchState(new MenuSelection(), false);
 							case "about":
 								Switch.switchState(new About(), false);
+							case "instructions":
+								Switch.switchState(new Instructions(), false);
 							case "exit":
 								openfl.system.System.exit(0);
 						}
@@ -121,6 +147,7 @@ class Menu extends TempoState
 	
 	public static function playMenuMusic()
 	{
-		FlxG.sound.playMusic("assets/menu/menu_music.ogg");
+		// FlxG.sound.playMusic("assets/menu/menu_music.ogg");
+		Menu.menuAudio.resume();
 	}
 }

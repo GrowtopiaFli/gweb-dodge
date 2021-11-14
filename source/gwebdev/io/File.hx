@@ -47,7 +47,11 @@ class File
 				catch (e:Dynamic) {};
 			return null;
 			#else
+			#if android
+			return Assets.getBytes(assetsPath);
+			#else
 			return ByteArray.fromFile(assetsPath);
+			#end
 			#end
 		}
 		#if (sys && !mobile)

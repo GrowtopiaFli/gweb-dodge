@@ -18,12 +18,15 @@ class MenuSelection extends TempoState
 
 	public var daItemSize:Int = 28;
 	public var itemOffset:Int = 8;
+	
+	public function new(play:Bool = false)
+	{
+		super();
+		if (play) Menu.menuAudio.play(true);
+	}
 
 	override public function create()
 	{
-		if (FlxG.sound.music == null || (FlxG.sound.music != null && !FlxG.sound.music.playing))
-			Menu.playMenuMusic();
-	
 		var defFont:String = "fonts/archivoblack.ttf";
 
 		levelList = new FlxTypedSpriteGroup<TextItem>();
@@ -72,6 +75,9 @@ class MenuSelection extends TempoState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (!Menu.menuAudio.playing)
+			Menu.playMenuMusic();
 
 		if (Data.songNames.length > 0)
 		{

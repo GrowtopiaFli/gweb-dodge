@@ -3,6 +3,8 @@ package;
 import flixel.FlxG;
 import flixel.FlxState;
 
+import openfl.utils.Assets;
+
 class TempoState extends FlxState
 {
 	public var beats:Int = 0;
@@ -14,8 +16,10 @@ class TempoState extends FlxState
 	public function new()
 	{
 		super();
-		Sfx.load();
+		if (Assets.cache.enabled)
+			Assets.cache.clear();
 		if (!Data.initialized) Data.init();
+		Menu.menuAudio.pause();
 	}
 	
 	override public function update(elapsed:Float)
@@ -35,6 +39,9 @@ class TempoState extends FlxState
 		
 		prevBeats = Reflect.getProperty(this, "beats");
 		prevSteps = Reflect.getProperty(this, "steps");
+		
+		if (FlxG.keys.justPressed.F4)
+			FlxG.fullscreen = !FlxG.fullscreen;
 	}
 	
 	public function stepChange()

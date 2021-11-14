@@ -1,5 +1,7 @@
 package;
 
+import assets.*;
+
 import flixel.FlxG;
 import flixel.system.FlxSound;
 
@@ -11,19 +13,10 @@ class Sfx
 	"hurt3.wav",
 	"scroll.wav",
 	"select.wav",
-	"enemy_spawn.wav",
-	"enemy_die.wav",
 	"shoot.wav",
-	"hit.wav"
+	"hit.wav",
+	"heal.wav"
 	];
-
-	public static function load()
-	{
-		for (stuff in paths)
-		{
-			FlxG.sound.cache("assets/" + stuff);
-		}
-	}
 
 	public static function hurt1()
 	{
@@ -50,29 +43,25 @@ class Sfx
 		loadSound(paths[4]);
 	}
 	
-	public static function enemy_spawn()
+	public static function shoot()
 	{
 		loadSound(paths[5]);
 	}
 	
-	public static function enemy_die()
+	public static function hit()
 	{
 		loadSound(paths[6]);
 	}
 	
-	public static function shoot()
+	public static function heal()
 	{
 		loadSound(paths[7]);
 	}
 	
-	public static function hit()
-	{
-		loadSound(paths[8]);
-	}
-	
 	public static function loadSound(path:String)
 	{
-		var daSnd:FlxSound = new FlxSound().loadEmbedded("assets/sounds/" + path, false);
+		// var daSnd:FlxSound = new FlxSound().loadEmbedded("assets/sounds/" + path, false);
+		var daSnd:FlxSound = AudioManager.get("sounds/" + path, false);
 		// FlxG.sound.list.add(daSnd);
 		daSnd.play();
 	}

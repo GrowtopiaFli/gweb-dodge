@@ -14,7 +14,9 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="480" height="640" fps="60" background="#424549" hardware="true" vsync="false" />
+	
+	<!-- <window width="480" height="640" fps="60" background="#424549" hardware="true" vsync="false" /> -->
+	<window width="480" height="640" fps="60" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
@@ -52,6 +54,8 @@
 	<haxelib name="nape-haxe4" />
 	
 	<haxelib name="hxconf" /> <!-- https://github.com/bendmorris/hxconf -->
+	
+	<haxelib name="format" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 

@@ -38,6 +38,6 @@ class LostState extends TempoState
 		if (FlxG.keys.justPressed.ENTER)
 			Switch.switchState(new PlayState(songId));
 		if (FlxG.keys.anyJustPressed([BACKSPACE, ESCAPE]))
-			Switch.switchState(new MenuSelection());
+			Switch.switchState(new MenuSelection(true));
 	}
 }

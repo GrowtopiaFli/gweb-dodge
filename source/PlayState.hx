@@ -1,5 +1,7 @@
 package;
 
+import assets.*;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
@@ -11,6 +13,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import flixel.math.FlxPoint;
+
+import flixel.system.FlxSound;
 
 /*
 #if (openfl >= "8.0.0")
@@ -78,17 +82,19 @@ class PlayState extends TempoState
 	
 	public var bulletSize:Int = 8;
 	
-	public var enemyShootChance:Float = 40;
+	public var enemyShootChance:Float = 35;
 
-	public var enemyBulletVelBak:Float = 10;
+	public var enemyBulletVelBak:Float = 6;
 	public var playerBulletVelBak:Float = 18;
 	public var enemyBulletVel:Float = 0;
 	public var playerBulletVel:Float = 0;
 	
 	public var blockVel:Float = 22;
 	
-	public var enemyMaxTime:Float = 5;
-	public var enemySpeed:Float = 1;
+	public var enemyMaxTime:Float = 4;
+	public var enemySpeed:Float = 1.8;
+	
+	public var daTimer:Float = -1;
 	
 	/*	public var spectator:Bool = true;
 		public var spectatorPause:Bool = false;
@@ -195,9 +201,9 @@ class PlayState extends TempoState
 		var stepEvtString:String = "step_evts_" + iniDataSong["event_id"];
 		var beatEvtString:String = "beat_evts_" + iniDataSong["event_id"];
 		
-		if (Data.iniData.exists(stepEvtString))
+		if (Data.iniDataEvents.exists(iniDataSong["audio"]) && Data.iniDataEvents[iniDataSong["audio"]].exists(stepEvtString))
 		{
-			var iniDataEvents = Data.iniData[stepEvtString];
+			var iniDataEvents = Data.iniDataEvents[iniDataSong["audio"]][stepEvtString];
 
 			for (shit in iniDataEvents.keys())
 			{
@@ -216,9 +222,9 @@ class PlayState extends TempoState
 			}
 		}
 		
-		if (Data.iniData.exists(beatEvtString))
+		if (Data.iniDataEvents.exists(iniDataSong["audio"]) && Data.iniDataEvents[iniDataSong["audio"]].exists(beatEvtString))
 		{
-			var iniDataEvents = Data.iniData[beatEvtString];
+			var iniDataEvents = Data.iniDataEvents[iniDataSong["audio"]][beatEvtString];
 			
 			for (shit in iniDataEvents.keys())
 			{
@@ -242,10 +248,13 @@ class PlayState extends TempoState
 		
 		Tempo.bpm = Std.parseInt(iniDataSong["bpm"]);
 
-		FlxG.sound.cache("assets/music/" + iniDataSong["audio"] + ".ogg");
+		// FlxG.sound.cache("assets/music/" + iniDataSong["audio"] + ".ogg");
 		new FlxTimer().start(0.5, function(tmr:FlxTimer)
 		{
-			FlxG.sound.playMusic("assets/music/" + iniDataSong["audio"] + ".ogg", 1, false);
+			// FlxG.sound.playMusic("assets/music/" + iniDataSong["audio"] + ".ogg", 1, false);
+			// FlxG.sound.playMusic(AudioManager.get("music/" + iniDataSong["audio"] + ".ogg"), 1, false);
+			FlxG.sound.music = AudioManager.get("music/" + iniDataSong["audio"] + ".ogg");
+			FlxG.sound.music.play();
 			FlxG.sound.music.onComplete = songDone;
 			stepChange();
 			beatChange();
@@ -300,6 +309,21 @@ class PlayState extends TempoState
 		
 		if (!paused)
 		{
+			if (daTimer >= 10)
+			{
+				if (health > 0 && health < 3)
+				{
+					Sfx.heal();
+					health++;
+				}
+				if (health < 3)
+					daTimer = 0;
+				else
+					daTimer = -1;
+			}
+			if (daTimer >= 0)
+				daTimer += 1 / FlxG.updateFramerate;
+
 			if (curPos < 0) curPos = 3;
 			if (curPos > 3) curPos = 0;
 			
@@ -307,7 +331,7 @@ class PlayState extends TempoState
 		
 			var velPos:Float = velFromFps(0.5);
 			
-			if (enemies.length > 0)
+		/*	if (enemies.length > 0)
 			{
 				var playerUpDownVel:Float = velFromFps(8);
 				if (FlxG.keys.pressed.UP && !dead) player.y -= playerUpDownVel;
@@ -315,7 +339,7 @@ class PlayState extends TempoState
 				if (player.y > FlxG.height - player.height - 5) player.y = FlxG.height - player.height - 5;
 				if (player.y < (FlxG.height / 2.5) - (player.height / 2)) player.y = (FlxG.height / 2.5) - (player.height / 2);
 			}
-			else
+			else */
 				player.y = FlxMath.lerp(FlxG.height - player.height - 5, player.y, velFromFps(0.85));
 			
 			var targetX:Float = (((FlxG.width / 4) * curPos) + (((FlxG.width / 4) - player.width) / 2));
@@ -351,12 +375,14 @@ class PlayState extends TempoState
 					fadingBlocks.remove(block, true);
 					block.destroy();
 				}
+				else
+					block.vel = 0;
 				block.alpha -= velFromFps(0.08);
 			});
 
 			queuedBlocks.forEachAlive(function(block:Block)
 			{
-				block.alpha = FlxMath.lerp(targetAlpha, block.alpha, alphaVel);
+				block.alpha = FlxMath.lerp(targetAlpha, block.alpha, alphaVel - velFromFps(0.24));
 				block.x = (FlxG.width / 4) * block.pos;
 				/*	enemyBullets.forEachAlive(function(bullet:Bullet)
 					{
@@ -368,27 +394,24 @@ class PlayState extends TempoState
 							bullet.destroy();
 						}
 					}); */
-				playerBullets.forEachAlive(function(bullet:Bullet)
+				/* playerBullets.forEachAlive(function(bullet:Bullet)
 				{
-					if (checkCollision(block, bullet, 0, playerBulletVel))
+					if (checkCollision(block, bullet, 0, -playerBulletVel) && block.breakable)
 					{
 						Sfx.hit();
 						bullet.kill();
 						playerBullets.remove(bullet, true);
 						bullet.destroy();
-						if (block.breakable)
-						{
-							fadingBlocks.add(block);
-							queuedBlocks.remove(block, true);
-						}
+						fadingBlocks.add(block);
+						queuedBlocks.remove(block, true);
 					}
-				});
+				}); */
 			});
 
 			blocks.forEachAlive(function(block:Block)
 			{
 				var ded:Bool = false;
-				block.alpha = FlxMath.lerp(targetAlpha, block.alpha, alphaVel);
+				block.alpha = FlxMath.lerp(targetAlpha, block.alpha, alphaVel - velFromFps(0.24));
 				block.x = (FlxG.width / 4) * block.pos;
 				if (block.y + block.height > player.y + 6 && block.pos == curPos)
 					damagePlayer();
@@ -406,18 +429,15 @@ class PlayState extends TempoState
 					}); */
 				playerBullets.forEachAlive(function(bullet:Bullet)
 				{
-					if (checkCollision(block, bullet, 0, playerBulletVel))
+					if (checkCollision(block, bullet, 0, -playerBulletVel) && block.breakable)
 					{
 						Sfx.hit();
 						bullet.kill();
 						playerBullets.remove(bullet, true);
 						bullet.destroy();
-						if (block.breakable)
-						{
-							ded = false;
-							fadingBlocks.add(block);
-							blocks.remove(block, true);
-						}
+						ded = false;
+						fadingBlocks.add(block);
+						blocks.remove(block, true);
 					}
 				});
 				if (ded)
@@ -427,9 +447,7 @@ class PlayState extends TempoState
 					block.destroy();
 				}
 				else
-				{
-					block.velocity.y = blockVel * FlxG.updateFramerate;
-				}
+					block.paused = false;
 			});
 
 			enemies.forEachAlive(function(enemy:Enemy)
@@ -441,6 +459,11 @@ class PlayState extends TempoState
 				if (enemy.y > player.y) enemy.y -= movementVelocity;
 				enemy.angle = FlxMath.lerp((GWebUtils.angleBetweenObj(enemy.midpointX, enemy.midpointY, player.getMidpoint().x, player.getMidpoint().y)) + 90, enemy.angle, velFromFps(0.8));
 				enemy.dead = enemy.timeLived >= enemyMaxTime;
+				playerBullets.forEachAlive(function(bullet:Bullet)
+				{
+					if (checkCollision(enemy, bullet, bullet.vel.x, bullet.vel.y))
+						enemy.dead = true;
+				});
 				if (!outScreen && (FlxG.collide(player, enemy) || (enemy.x >= player.x && enemy.x <= player.x + player.width && enemy.y >= player.y && enemy.y <= player.y + player.height)) && health > 0 && !immune)
 				{
 					damagePlayer();
@@ -486,14 +509,27 @@ class PlayState extends TempoState
 								bullet.x < -bullet.width ||
 								bullet.y > FlxG.height ||
 								bullet.y < -bullet.height);
-				if (!outScreen && (FlxG.collide(player, bullet) || (bullet.x >= player.x && bullet.x <= player.x + player.width && bullet.y >= player.y && bullet.y <= player.y + player.height)) && health > 0 && !immune)
+				var playSfx:Bool = false;
+				if (!outScreen && checkCollision(player, bullet, bullet.vel.x, bullet.vel.y) && health > 0 && !immune && !bullet.cantKill)
 				{
 					damagePlayer();
-					ded = true;
+					ded = false;
+					Sfx.hit();
 				}
+				playerBullets.forEachAlive(function(bullet2:Bullet)
+				{
+					if (checkCollision(bullet, bullet2, 0, -playerBulletVel))
+					{
+						ded = true;
+						playSfx = true;
+					}
+				});
+				if (bullet.cantKill)
+					bullet.alpha = 0.6;
 				if (ded)
 				{
-					Sfx.hit();
+					if (playSfx)
+						Sfx.hit();
 					bullet.kill();
 					enemyBullets.remove(bullet, true);
 					bullet.destroy();
@@ -502,6 +538,12 @@ class PlayState extends TempoState
 				{
 					bullet.x += bullet.vel.x;
 					bullet.y += bullet.vel.y;
+					if (bullet.pos != curPos)
+					{
+						bullet.cantKill = true;
+						bullet.x += bullet.vel.x * 3;
+						bullet.y += bullet.vel.y * 3;
+					}
 				}
 			});
 			
@@ -513,7 +555,7 @@ class PlayState extends TempoState
 								bullet.y < -bullet.height);
 				if (ded)
 				{
-					Sfx.hit();
+					// Sfx.hit();
 					bullet.kill();
 					playerBullets.remove(bullet, true);
 					bullet.destroy();
@@ -581,7 +623,7 @@ class PlayState extends TempoState
 
 			blocks.forEachAlive(function(block:Block)
 			{
-				block.velocity.y = 0;
+				block.paused = true;
 			});
 			
 			if (FlxG.sound.music != null)
@@ -605,6 +647,7 @@ class PlayState extends TempoState
 						item.alpha = FlxMath.lerp(selectedAlpha, item.alpha, alphaVel);
 						if (FlxG.keys.justPressed.ENTER)
 						{
+							Sfx.select();
 							switch (item.itemName.toLowerCase())
 							{
 								case "resume":
@@ -612,7 +655,7 @@ class PlayState extends TempoState
 								case "restart":
 									Switch.switchState(new PlayState(songId));
 								case "go to menu":
-									Switch.switchState(new MenuSelection());
+									Switch.switchState(new MenuSelection(true));
 							}
 						}
 					}
@@ -624,7 +667,7 @@ class PlayState extends TempoState
 				paused = false;
 			}
 			
-			if (FlxG.keys.justPressed.R) FlxG.resetState();
+			// if (FlxG.keys.justPressed.R) FlxG.resetState();
 		}
 		else
 		{
@@ -634,6 +677,7 @@ class PlayState extends TempoState
 			if (FlxG.sound.music != null && !dead)
 				FlxG.sound.music.resume();
 			if (FlxG.keys.justPressed.ENTER) paused = true;
+			// if (paused) Sfx.select();
 		}
 		
 		/*	if (spectator)
@@ -693,6 +737,8 @@ class PlayState extends TempoState
 			}
 			daBlock.pos = id - 1;
 			daBlock.alpha = 0;
+			daBlock.vel = velFromFps(blockVel);
+			daBlock.paused = true;
 			queuedBlocks.add(daBlock);
 		}
 		else if (id >= 5 && id <= 8)
@@ -741,6 +787,8 @@ class PlayState extends TempoState
 		// if (spectator) return;
 		if (health > 0 && !immune)
 		{
+			if (daTimer < 0)
+				daTimer = 0;
 			switch (health)
 			{
 				case 3:
@@ -761,6 +809,7 @@ class PlayState extends TempoState
 	{
 		// if (spectator) return;
 		var daBullet:Bullet = new Bullet(player.getMidpoint().x, player.getMidpoint().y, bulletSize, bulletSize, 0xFF009AFF);
+		daBullet.immovable = true;
 		playerBullets.add(daBullet);
 	}
 	
@@ -768,12 +817,20 @@ class PlayState extends TempoState
 	{
 		var daBullet:Bullet = new Bullet(daX, daY, bulletSize, bulletSize, 0xFFFF9A9A);
 		daBullet.funiAngle = daAngle;
+		daBullet.pos = Reflect.getProperty(this, "curPos");
+		daBullet.immovable = true;
 		enemyBullets.add(daBullet);
 	}
 	
 	public function checkCollision(obj:FlxSprite, obj2:FlxSprite, xVel:Float, yVel:Float):Bool
 	{
-		if (FlxG.collide(obj, obj2) || ( ( obj2.y - yVel >= obj.y && obj2.y <= obj.y + obj.height ) || ( obj2.y - yVel <= obj.y + obj.height && obj2.y >= obj.y ) ) && ( ( obj2.x <= obj.x + obj.width && obj2.x + xVel >= obj.x ) || ( obj2.x + xVel <= obj.x + obj.width && obj2.x >= obj.x ) ) )
+		if 	( FlxG.collide(obj, obj2) ||
+			( ( yVel >= 0 ) && ( ( obj2.y + yVel >= obj.y && obj2.y <= obj.y + obj.height ) ) ||
+			( ( yVel <= 0 ) && ( ( obj2.y + yVel <= obj.y + obj.height && obj2.y + obj2.height >= obj.y ) ) ) ) &&
+			( ( xVel >= 0 ) && ( ( obj2.x + xVel >= obj.x && obj2.x <= obj.x + obj.width  ) ) ||
+			( ( xVel <= 0 ) && ( ( obj2.x + xVel <= obj.x + obj.width && obj2.x + obj2.width >= obj.x ) ) ) ) ||
+			( obj2.y <= obj.y + obj.height && obj2.y + obj2.height >= obj.y && obj2.x + obj2.width >= obj.x && obj2.x <= obj.x + obj.width ) ||
+			( FlxG.overlap(obj, obj2) ) )
 			return true;
 		else
 			return false;

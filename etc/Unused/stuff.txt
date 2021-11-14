@@ -1,0 +1,30 @@
+/*varying vec2 vertPos;
+		uniform int u_width;
+
+		float CalcGauss( float x, float sigma ) 
+		{
+		  float coeff = 1.0 / (2.0 * 3.14157 * sigma);
+		  float expon = -(x*x) / (2.0 * sigma);
+		  return (coeff*exp(expon));
+		}
+
+		void main()
+		{
+			vec2 texC = openfl_TextureCoordv.st; // * 0.5 + 0.5;
+			vec4 texCol = texture( bitmap, texC );
+			vec4 gaussCol = vec4( texCol.rgb, 1.0 );
+			vec2 step = 1.0 / openfl_TextureSize;
+			/*for ( int i = 1; i <= 5; ++ i )
+			{*/
+				vec2 actStep = vec2( float(1) * step.x, 0.0 );   // this is for the X-axis
+				// vec2 actStep = vec2( 0.0, float(1) * step.y );   this would be for the Y-axis
+
+				float weight = CalcGauss( float(1) / float(0.1), 0.05 );
+				texCol = texture2D( bitmap, texC + actStep );    
+				gaussCol += vec4( texCol.rgb * weight, weight );
+				texCol = texture2D( bitmap, texC - actStep );
+				gaussCol += vec4( texCol.rgb * weight, weight );
+			//}
+			gaussCol.rgb /= gaussCol.w;
+			gl_FragColor = vec4( gaussCol.rgb, 1.0 );
+		}*/
