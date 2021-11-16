@@ -60,6 +60,7 @@ jobs:
           haxelib install format --quiet
           haxelib git hxconf https://github.com/bendmorris/hxconf --quiet
           haxelib git android-orientation https://github.com/danielpancake/android-orientation --quiet
+          haxelib install nape-haxe4 --quiet
           haxelib list
           haxelib run lime build android -release
           
