@@ -248,17 +248,23 @@ class PlayState extends TempoState
 		
 		Tempo.bpm = Std.parseInt(iniDataSong["bpm"]);
 
+		#if sys
+		sys.thread.Thread.create(() -> {
+		#end
 		// FlxG.sound.cache("assets/music/" + iniDataSong["audio"] + ".ogg");
 		new FlxTimer().start(0.5, function(tmr:FlxTimer)
 		{
 			// FlxG.sound.playMusic("assets/music/" + iniDataSong["audio"] + ".ogg", 1, false);
-			// FlxG.sound.playMusic(AudioManager.get("music/" + iniDataSong["audio"] + ".ogg"), 1, false);
-			FlxG.sound.music = AudioManager.get("music/" + iniDataSong["audio"] + ".ogg");
+			// FlxG.sound.playMusic(MusicManager.get("music/" + iniDataSong["audio"] + ".ogg"), 1, false);
+			FlxG.sound.music = MusicManager.get("music/" + iniDataSong["audio"] + ".ogg");
 			FlxG.sound.music.play();
 			FlxG.sound.music.onComplete = songDone;
 			stepChange();
 			beatChange();
 		}, 1);
+		#if sys
+		});
+		#end
 		
 		/*	_fx = new FlxSprite();
 			_fx.makeGraphic(Math.floor(FlxG.width), Math.floor(FlxG.height), 0, true);
@@ -575,12 +581,13 @@ class PlayState extends TempoState
 				songTime = FlxG.sound.music.time;
 			}
 			
-			if (FlxG.keys.justPressed.SPACE) playerShoot();
+			// if (FlxG.keys.justPressed.SPACE || (Touch.currentGesture == "NONE" && Touch.released)) playerShoot(); Might Destroy Android Gameplay
+			if (FlxG.keys.justPressed.SPACE || Touch.released) playerShoot();
 			
 			prevPos = Reflect.getProperty(this, "curPos");
 
-			if (FlxG.keys.justPressed.RIGHT && !dead) curPos++;
-			if (FlxG.keys.justPressed.LEFT && !dead) curPos--;
+			if (Controller.right && !dead) curPos++;
+			if (Controller.left && !dead) curPos--;
 			
 			if (immune)
 			{
@@ -633,8 +640,8 @@ class PlayState extends TempoState
 			
 			if (pauseItemList.length > 0)
 			{
-				if (FlxG.keys.justPressed.UP) selectedPauseItem--;
-				if (FlxG.keys.justPressed.DOWN) selectedPauseItem++;
+				if (Controller.up) selectedPauseItem--;
+				if (Controller.down) selectedPauseItem++;
 				
 				if (selectedPauseItem < 0) selectedPauseItem = pauseItemList.length - 1;
 				if (selectedPauseItem > pauseItemList.length - 1) selectedPauseItem = 0;
@@ -647,7 +654,7 @@ class PlayState extends TempoState
 					if (selectedPauseItem == itemIndex)
 					{
 						item.alpha = FlxMath.lerp(selectedAlpha, item.alpha, alphaVel);
-						if (FlxG.keys.justPressed.ENTER)
+						if (Controller.enter)
 						{
 							Sfx.select();
 							switch (item.itemName.toLowerCase())
@@ -664,7 +671,7 @@ class PlayState extends TempoState
 					else item.alpha = FlxMath.lerp(unselectedAlpha, item.alpha, alphaVel);
 				});
 			}
-			else if (FlxG.keys.justPressed.ENTER)
+			else if (Controller.enter)
 			{
 				paused = false;
 			}
@@ -678,7 +685,7 @@ class PlayState extends TempoState
 			pauseText.visible = false;
 			if (FlxG.sound.music != null && !dead)
 				FlxG.sound.music.resume();
-			if (FlxG.keys.justPressed.ENTER) paused = true;
+			if (FlxG.keys.justPressed.ENTER || Controller.up) paused = true;
 			// if (paused) Sfx.select();
 		}
 		

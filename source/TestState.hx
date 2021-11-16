@@ -199,17 +199,23 @@ class TestState extends TempoState
 		
 		Tempo.bpm = Std.parseInt(iniDataSong["bpm"]);
 
+		#if sys
+		sys.thread.Thread.create(() -> {
+		#end
 		// FlxG.sound.cache("assets/music/" + iniDataSong["audio"] + ".ogg");
 		new FlxTimer().start(0.5, function(tmr:FlxTimer)
 		{
 			// FlxG.sound.playMusic("assets/music/" + iniDataSong["audio"] + ".ogg", 1, false);
-			// FlxG.sound.playMusic(AudioManager.get("music/" + iniDataSong["audio"] + ".ogg"), 1, false);
-			FlxG.sound.music = AudioManager.get("music/" + iniDataSong["audio"] + ".ogg");
+			// FlxG.sound.playMusic(MusicManager.get("music/" + iniDataSong["audio"] + ".ogg"), 1, false);
+			FlxG.sound.music = MusicManager.get("music/" + iniDataSong["audio"] + ".ogg");
 			FlxG.sound.music.play();
 			FlxG.sound.music.onComplete = songDone;
 			stepChange();
 			beatChange();
 		}, 1);
+		#if sys
+		});
+		#end
 		
 		/*	_fx = new FlxSprite();
 			_fx.makeGraphic(Math.floor(FlxG.width), Math.floor(FlxG.height), 0, true);
@@ -235,16 +241,22 @@ class TestState extends TempoState
 	public function songDone():Void
 	{
 		var iniDataSong = Data.iniData[songId];
-		FlxG.sound.cache("assets/music/" + iniDataSong["audio"] + ".ogg");
+		// FlxG.sound.cache("assets/music/" + iniDataSong["audio"] + ".ogg");
+		#if sys
+		sys.thread.Thread.create(() -> {
+		#end
 		new FlxTimer().start(0.5, function(tmr:FlxTimer)
 		{
 			// FlxG.sound.playMusic("assets/music/" + iniDataSong["audio"] + ".ogg", 1, false);
-			FlxG.sound.music = AudioManager.get("music/" + iniDataSong["audio"] + ".ogg");
+			FlxG.sound.music = MusicManager.get("music/" + iniDataSong["audio"] + ".ogg");
 			FlxG.sound.music.play();
 			FlxG.sound.music.onComplete = songDone;
 			stepChange();
 			beatChange();
 		}, 1);
+		#if sys
+		});
+		#end
 	}
 
 	override public function update(elapsed:Float)

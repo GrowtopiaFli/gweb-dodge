@@ -5,6 +5,10 @@ import flixel.FlxState;
 
 import openfl.utils.Assets;
 
+#if android
+import extension.androidorientation.AndroidOrientation;
+#end
+
 class TempoState extends FlxState
 {
 	public var beats:Int = 0;
@@ -12,12 +16,18 @@ class TempoState extends FlxState
 	public var prevBeats:Int = 0;
 	public var prevSteps:Int = 0;
 	public var songTime:Float = 0;
-
+	
 	public function new()
 	{
 		super();
+		#if sys
+		sys.thread.Thread.create(() -> {
+		#end
 		if (Assets.cache.enabled)
 			Assets.cache.clear();
+		#if sys
+		});
+		#end
 		if (!Data.initialized) Data.init();
 		Menu.menuAudio.pause();
 	}
@@ -26,8 +36,12 @@ class TempoState extends FlxState
 	{
 		super.update(elapsed);
 		
+		#if android
+		AndroidOrientation.setScreenOrientation(AndroidOrientation.SENSOR_PORTRAIT);
+		#end
+		
 		#if !web
-		FlxG.mouse.visible = false;
+		//FlxG.mouse.visible = false;
 		#end
 		
 		var daThing:Float = songTime / 1000 / 60;

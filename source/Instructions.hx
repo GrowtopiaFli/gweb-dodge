@@ -15,10 +15,18 @@ class Instructions extends TempoState
 	{
 		var txt:FlxText = new FlxText(0, 0, 0,
 		"Controls:\n" +
+		#if mobile
+		"Swipe Left/Right To Move\n" +
+		"Between Tiles...\n" +
+		"Tap To Shoot/Select...\n" +
+		"Swipe Up To Pause\n" +
+		#else
 		"Press The Left/Right Arrow Keys\n" +
 		"To Move Between Tiles (Not Hold)...\n" +
 		"Press Spacebar To Shoot (Not Hold)...\n" +
 		"Press F4 To Toggle Fullscreen...\n" +
+		"Press Enter To Pause/Select...\n" +
+		#end
 		"\nMechanics:\n" +
 		"You Can Only Shoot Red Blocks (Breakable Blocks)\n" +
 		"And Enemies...\n" +
@@ -47,7 +55,7 @@ class Instructions extends TempoState
 		if (!Menu.menuAudio.playing)
 			Menu.playMenuMusic();
 		
-		if (FlxG.keys.justPressed.BACKSPACE || FlxG.keys.justPressed.ESCAPE)
+		if (Controller.back || Controller.right)
 		{
 			Sfx.select();
 			Switch.switchState(new Menu(), false);

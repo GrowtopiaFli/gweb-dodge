@@ -63,6 +63,7 @@ class Sfx
 		// var daSnd:FlxSound = new FlxSound().loadEmbedded("assets/sounds/" + path, false);
 		var daSnd:FlxSound = AudioManager.get("sounds/" + path, false);
 		// FlxG.sound.list.add(daSnd);
+		daSnd.volume = FlxG.sound.volume;
 		daSnd.play();
 	}
 }

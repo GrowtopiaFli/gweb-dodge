@@ -79,13 +79,33 @@ class AssetManager
 					var isAudio:Bool = false;
 					for (ext in audioExtensions)
 						if (tgzFile.fileName.endsWith(ext)) isAudio = true;
-					if (isAudio)
+					if (isAudio && !tgzFile.fileName.contains("music/"))
 					{
 						var snd:FlxSound = FlxG.sound.load(Sound.fromAudioBuffer(AudioBuffer.fromBytes(tgzFile.data)));
 						snd.persist = true;
 						sounds.set(tgzFile.fileName, snd);
 					}
 				}
+	}
+	
+	public static function getMusic(path:String):FlxSound
+	{
+		var daData:Array<Data> = extract();
+		for (tgzData in daData)
+			for (tgzFile in tgzData)
+				if (tgzFile.data != null && !tgzFile.fileName.endsWith("/"))
+				{
+					var isAudio:Bool = false;
+					for (ext in audioExtensions)
+						if (tgzFile.fileName.endsWith(ext)) isAudio = true;
+					if (isAudio && tgzFile.fileName.contains("music/") && tgzFile.fileName == path)
+					{
+						var snd:FlxSound = FlxG.sound.load(Sound.fromAudioBuffer(AudioBuffer.fromBytes(tgzFile.data)));
+						snd.persist = true;
+						return snd;
+					}
+				}
+		return null;
 	}
 	
 	public static function getBytes(path:String):Bytes

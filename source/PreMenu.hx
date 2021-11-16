@@ -6,6 +6,10 @@ import flixel.FlxState;
 import flixel.FlxG;
 import flixel.text.FlxText;
 
+#if android
+import extension.androidorientation.AndroidOrientation;
+#end
+
 class PreMenu extends FlxState
 {
 	override public function create()
@@ -39,5 +43,9 @@ class PreMenu extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		
+		#if android
+		AndroidOrientation.setScreenOrientation(AndroidOrientation.SENSOR_PORTRAIT);
+		#end
 	}
 }

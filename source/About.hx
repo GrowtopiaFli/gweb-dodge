@@ -47,7 +47,7 @@ class About extends TempoState
 		if (!Menu.menuAudio.playing)
 			Menu.playMenuMusic();
 		
-		if (FlxG.keys.justPressed.BACKSPACE || FlxG.keys.justPressed.ESCAPE)
+		if (Controller.back || Controller.right)
 		{
 			Sfx.select();
 			Switch.switchState(new Menu(), false);

@@ -97,12 +97,12 @@ class Menu extends TempoState
 		
 		if (itemList.length > 0)
 		{
-			if (FlxG.keys.justPressed.UP)
+			if (Controller.up)
 			{
 				selectedMenuItem--;
 				Sfx.scroll();
 			}
-			if (FlxG.keys.justPressed.DOWN)
+			if (Controller.down)
 			{
 				selectedMenuItem++;
 				Sfx.scroll();
@@ -119,7 +119,7 @@ class Menu extends TempoState
 				if (selectedMenuItem == itemIndex)
 				{
 					item.alpha = FlxMath.lerp(selectedAlpha, item.alpha, alphaVel);
-					if (FlxG.keys.justPressed.ENTER)
+					if (Controller.enter)
 					{
 						Sfx.select();
 						switch (item.itemName.toLowerCase())

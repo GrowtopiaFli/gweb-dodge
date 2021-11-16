@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="GWeb Dodge" file="GWeb Dodge" packageName="com.gwebdev.gwebdodge" package="com.gwebdev.gwebdodge" main="Main" version="0.0.1" company="GWebDev" />
+	<app title="GWeb Dodge" file="GWeb Dodge" packageName="com.gwebdev.gwebdodge" package="com.gwebdev.gwebdodge" main="Main" version="1.0.1" company="GWebDev" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -22,10 +22,10 @@
 	<window if="html5" resizable="true" />
 
 	<!--Desktop-specific-->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false" />
+	<window if="desktop" orientation="portrait" fullscreen="false" resizable="true" vsync="false" />
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false" />
+	<window if="mobile" orientation="portrait" fullscreen="true" width="0" height="0" resizable="false" />
 
 	<!-- _____________________________ Path Settings ____________________________ -->
 
@@ -56,6 +56,8 @@
 	<haxelib name="hxconf" /> <!-- https://github.com/bendmorris/hxconf -->
 	
 	<haxelib name="format" />
+	
+	<haxelib name="android-orientation" if="android" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 

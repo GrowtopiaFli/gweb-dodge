@@ -35,7 +35,7 @@ class CompleteState extends TempoState
 	{
 		super.update(elapsed);
 		
-		if (FlxG.keys.justPressed.ENTER)
+		if (Controller.enter)
 			Switch.switchState(new MenuSelection(true));
 	}
 }

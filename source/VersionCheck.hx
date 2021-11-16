@@ -8,6 +8,10 @@ import flixel.util.FlxTimer;
 
 import haxe.io.Bytes;
 
+#if android
+import extension.androidorientation.AndroidOrientation;
+#end
+
 class VersionCheck extends FlxState
 {
 	public var text:FlxText;
@@ -29,6 +33,10 @@ class VersionCheck extends FlxState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		
+		#if android
+		AndroidOrientation.setScreenOrientation(AndroidOrientation.SENSOR_PORTRAIT);
+		#end
 	}
 	
 	function init():Void
@@ -46,7 +54,7 @@ class VersionCheck extends FlxState
 				}
 				else
 				{
-					#if (sys && !mobile)
+					#if sys
 					if (sys.FileSystem.exists('assets/latest_ver.txt'))
 						compare(Requester.readFile('assets/latest_ver.txt').toString());
 					else
@@ -79,8 +87,6 @@ class VersionCheck extends FlxState
 	{
 		#if sys
 		sys.thread.Thread.create(() -> {
-		#end
-		#if (sys && !mobile)
 		sys.io.File.saveBytes('assets/latest_ver.txt', Bytes.ofString(data));
 		#end
 		OutdatedState.daVer = data;

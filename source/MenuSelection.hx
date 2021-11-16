@@ -111,7 +111,7 @@ class MenuSelection extends TempoState
 							Sfx.select();
 							Switch.switchState(new TestState(Data.songData[item.itemName]));
 						}
-						if (FlxG.keys.justPressed.ENTER)
+						if (Controller.enter)
 						{
 							Sfx.select();
 							Switch.switchState(new PlayState(Data.songData[item.itemName]));
@@ -127,7 +127,7 @@ class MenuSelection extends TempoState
 			songCount.text = "Songs: " + Data.songNames.length;
 		}
 		
-		if (FlxG.keys.justPressed.BACKSPACE || FlxG.keys.justPressed.ESCAPE)
+		if (Controller.back || Controller.right)
 		{
 			Sfx.select();
 			Switch.switchState(new Menu(), false);
